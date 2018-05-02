@@ -195,11 +195,11 @@ public class LocalPlayerActivity extends AppCompatActivity {
                 // and show the album art.
                 mPlaybackState = PlaybackState.IDLE;
                 if (mCastSession != null && mCastSession.isConnected()) {
-                    mPlaybackState = PlaybackState.IDLE;
                     updatePlaybackLocation(PlaybackLocation.REMOTE);
                     if (remotePlayback) {
                         loadRemoteMedia(0, true);
                         finish();
+                        return;
                     }
                 } else {
                     updatePlaybackLocation(PlaybackLocation.LOCAL);
