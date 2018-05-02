@@ -168,12 +168,13 @@ public class LocalPlayerActivity extends AppCompatActivity {
             mSelectedMedia = getIntent().getParcelableExtra("media");
             setupActionBar();
             boolean shouldStartPlayback = bundle.getBoolean("shouldStart");
+            boolean remotePlayback = bundle.getBoolean("playOnRemote");
             int startPosition = bundle.getInt("startPosition", 0);
 
 
             Uri uri = (Uri.parse(mSelectedMedia.getContentId()));
             Log.d(TAG, "Setting url of the VideoView to: " + mSelectedMedia.getContentId());
-            if (shouldStartPlayback) {
+            if (shouldStartPlayback && !remotePlayback) {
                 // this will be the case only if we are coming from the
                 // CastControllerActivity by disconnecting from a device
                 mPlaybackState = PlaybackState.PLAYING;
@@ -192,12 +193,18 @@ public class LocalPlayerActivity extends AppCompatActivity {
             } else {
                 // we should load the video but pause it
                 // and show the album art.
+                mPlaybackState = PlaybackState.IDLE;
                 if (mCastSession != null && mCastSession.isConnected()) {
+                    mPlaybackState = PlaybackState.IDLE;
                     updatePlaybackLocation(PlaybackLocation.REMOTE);
+                    if (remotePlayback) {
+                        loadRemoteMedia(0, true);
+                        finish();
+                    }
                 } else {
                     updatePlaybackLocation(PlaybackLocation.LOCAL);
                 }
-                mPlaybackState = PlaybackState.IDLE;
+
                 updatePlayButton(mPlaybackState);
             }
         }

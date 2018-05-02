@@ -67,7 +67,8 @@ public class MainActivity extends VideoBrowserActivity {
             List<MediaTrack> tracks)*/
         MediaInfo item = VideoProvider.buildMediaInfo(title, "", "", 0, mediaURL, "video/mp4", posterURL, posterURL, new ArrayList<MediaTrack>());
         intent.putExtra("media", item);
-        intent.putExtra("shouldStart", false);
+        intent.putExtra("shouldStart", true);
+        intent.putExtra("playOnRemote", true);
         startActivity(intent);
     }
 }
