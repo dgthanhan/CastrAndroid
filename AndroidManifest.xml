@@ -41,7 +41,8 @@
 
         <activity
                 android:name="vn.evolus.castr.MainActivity"
-                android:label="@string/app_name">
+                android:label="@string/app_name"
+                android:theme="@style/Theme.CastVideosTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
