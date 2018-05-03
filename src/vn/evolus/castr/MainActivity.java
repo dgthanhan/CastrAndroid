@@ -1,7 +1,11 @@
 package vn.evolus.castr;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.MediaRouteChooserDialog;
+import android.support.v7.media.MediaControlIntent;
+import android.support.v7.media.MediaRouteSelector;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.widget.Toast;
@@ -57,18 +61,53 @@ public class MainActivity extends VideoBrowserActivity {
     public void setPageTitle(String title) {
         this.setTitle(title);
     }
-
+    MediaInfo pendingItem = null;
     public void startCasting(String title, String description, String posterURL, String mediaURL) {
-        //TODO: implement this
         Log.d(TAG, "startCasting: " + title + " -> url: " + mediaURL + "poster: " + posterURL);
-        Intent intent = new Intent(this, LocalPlayerActivity.class);
-        /* public static MediaInfo buildMediaInfo(String title, String studio, String subTitle,
-            int duration, String url, String mimeType, String imgUrl, String bigImageUrl,
-            List<MediaTrack> tracks)*/
-        MediaInfo item = VideoProvider.buildMediaInfo(title, "", "", 0, mediaURL, "video/mp4", posterURL, posterURL, new ArrayList<MediaTrack>());
-        intent.putExtra("media", item);
-        intent.putExtra("shouldStart", true);
-        intent.putExtra("playOnRemote", true);
-        startActivity(intent);
+        final MediaInfo item = VideoProvider.buildMediaInfo(title, "", "", 0, mediaURL, "video/mp4", posterURL, posterURL, new ArrayList<MediaTrack>());
+        this.pendingItem = null;
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (mCastSession != null && mCastSession.isConnected()) {
+                    pendingItem = null;
+                    LocalPlayerActivity.loadRemoteMedia(MainActivity.this, mCastSession, item, 0, true);
+                } else {
+                    pendingItem = item;
+                    showMediaRouteChooser();
+                }
+            }
+        });
+    }
+    private void showMediaRouteChooser() {
+        MediaRouteChooserDialog mediaRouteChooserDialog = new MediaRouteChooserDialog(MainActivity.this);
+        MediaRouteSelector.Builder builder = new MediaRouteSelector.Builder();
+        builder.addControlCategory(MediaControlIntent.CATEGORY_REMOTE_PLAYBACK);
+
+        mediaRouteChooserDialog.setRouteSelector(builder.build());
+        mediaRouteChooserDialog.show();
+        mediaRouteChooserDialog.refreshRoutes();
+        mediaRouteChooserDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                if ((mCastSession == null || !mCastSession.isConnected()) && pendingItem != null) {
+                    Intent intent = new Intent(MainActivity.this, LocalPlayerActivity.class);
+                    intent.putExtra("media", pendingItem);
+                    intent.putExtra("shouldStart", true);
+                    intent.putExtra("playOnRemote", false);
+                    startActivity(intent);
+                    pendingItem = null;
+                }
+            }
+        });
+    }
+
+    @Override
+    protected void onApplicationConnected() {
+        super.onApplicationConnected();
+        if (pendingItem != null)  {
+            LocalPlayerActivity.loadRemoteMedia(this, mCastSession, pendingItem, 0, true);
+            pendingItem = null;
+        }
     }
 }

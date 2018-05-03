@@ -17,6 +17,7 @@
 package com.google.sample.cast.refplayer.mediaplayer;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Point;
@@ -197,7 +198,7 @@ public class LocalPlayerActivity extends AppCompatActivity {
                 if (mCastSession != null && mCastSession.isConnected()) {
                     updatePlaybackLocation(PlaybackLocation.REMOTE);
                     if (remotePlayback) {
-                        loadRemoteMedia(0, true);
+                        loadRemoteMedia(this, mCastSession, mSelectedMedia, 0, true);
                         finish();
                         return;
                     }
@@ -263,7 +264,7 @@ public class LocalPlayerActivity extends AppCompatActivity {
 
                     if (mPlaybackState == PlaybackState.PLAYING) {
                         mVideoView.getPlayer().setPlayWhenReady(false);
-                        loadRemoteMedia(mSeekbar.getProgress(), true);
+                        loadRemoteMedia(LocalPlayerActivity.this, mCastSession, mSelectedMedia, mSeekbar.getProgress(), true);
                         return;
                     } else {
                         mPlaybackState = PlaybackState.IDLE;
@@ -333,7 +334,7 @@ public class LocalPlayerActivity extends AppCompatActivity {
                         updatePlaybackLocation(PlaybackLocation.LOCAL);
                         break;
                     case REMOTE:
-                        loadRemoteMedia(0, true);
+                        loadRemoteMedia(this,mCastSession, mSelectedMedia, 0, true);
                         finish();
                         break;
                     default:
@@ -374,19 +375,19 @@ public class LocalPlayerActivity extends AppCompatActivity {
         updatePlayButton(mPlaybackState);
     }
 
-    private void loadRemoteMedia(int position, boolean autoPlay) {
-        if (mCastSession == null) {
+    public static void loadRemoteMedia(final Activity activity, CastSession castSession, MediaInfo mSelectedMedia, int position, boolean autoPlay) {
+        if (castSession == null) {
             return;
         }
-        final RemoteMediaClient remoteMediaClient = mCastSession.getRemoteMediaClient();
+        final RemoteMediaClient remoteMediaClient = castSession.getRemoteMediaClient();
         if (remoteMediaClient == null) {
             return;
         }
         remoteMediaClient.registerCallback(new RemoteMediaClient.Callback() {
             @Override
             public void onStatusUpdated() {
-                Intent intent = new Intent(LocalPlayerActivity.this, ExpandedControlsActivity.class);
-                startActivity(intent);
+                Intent intent = new Intent(activity, ExpandedControlsActivity.class);
+                activity.startActivity(intent);
                 remoteMediaClient.unregisterCallback(this);
             }
 

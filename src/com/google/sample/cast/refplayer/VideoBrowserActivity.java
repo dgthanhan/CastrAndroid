@@ -16,6 +16,16 @@
 
 package com.google.sample.cast.refplayer;
 
+import android.content.Intent;
+import android.os.Bundle;
+import android.os.Handler;
+import android.support.annotation.NonNull;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
+
 import com.google.android.gms.cast.framework.CastButtonFactory;
 import com.google.android.gms.cast.framework.CastContext;
 import com.google.android.gms.cast.framework.CastSession;
@@ -26,17 +36,6 @@ import com.google.android.gms.cast.framework.SessionManagerListener;
 import com.google.sample.cast.refplayer.queue.ui.QueueListViewActivity;
 import com.google.sample.cast.refplayer.settings.CastPreference;
 
-import android.content.Intent;
-import android.os.Bundle;
-import android.os.Handler;
-import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.util.Log;
-import android.view.KeyEvent;
-import android.view.Menu;
-import android.view.MenuItem;
-
 /**
  * The main activity that displays the list of videos.
  */
@@ -46,8 +45,8 @@ public class VideoBrowserActivity extends AppCompatActivity {
     private CastContext mCastContext;
     private final SessionManagerListener<CastSession> mSessionManagerListener =
             new MySessionManagerListener();
-    private CastSession mCastSession;
-    private MenuItem mediaRouteMenuItem;
+    protected CastSession mCastSession;
+    protected MenuItem mediaRouteMenuItem;
     private MenuItem mQueueMenuItem;
     private Toolbar mToolbar;
     private IntroductoryOverlay mIntroductoryOverlay;
@@ -60,6 +59,7 @@ public class VideoBrowserActivity extends AppCompatActivity {
             if (session == mCastSession) {
                 mCastSession = null;
             }
+            onApplicationConnected();
             invalidateOptionsMenu();
         }
 
@@ -72,6 +72,7 @@ public class VideoBrowserActivity extends AppCompatActivity {
         @Override
         public void onSessionStarted(CastSession session, String sessionId) {
             mCastSession = session;
+            onApplicationConnected();
             invalidateOptionsMenu();
         }
 
@@ -98,6 +99,11 @@ public class VideoBrowserActivity extends AppCompatActivity {
         @Override
         public void onSessionSuspended(CastSession session, int reason) {
         }
+    }
+
+    protected void onApplicationConnected() {
+
+
     }
 
     /*
