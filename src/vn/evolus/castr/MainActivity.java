@@ -59,7 +59,7 @@ public class MainActivity extends VideoBrowserActivity {
     }
 
     public void setPageTitle(String title) {
-        this.setTitle(title);
+        this.getSupportActionBar().setTitle(title);
     }
     MediaInfo pendingItem = null;
     public void startCasting(String title, String description, String posterURL, String mediaURL) {

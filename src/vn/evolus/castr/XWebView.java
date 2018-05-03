@@ -1,6 +1,7 @@
 package vn.evolus.castr;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
@@ -16,6 +17,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 import java.io.ByteArrayInputStream;
+import java.util.Date;
 
 /**
  * Created by dgthanhan on 3/3/17.
@@ -55,7 +57,7 @@ public class XWebView extends WebView {
                                       String url = request.getUrl().toString();
                                       if (url.contains("uniad") || url.contains("admicro") || url.contains("ambientplatform") || url.contains("gammaplatform")
                                               || url.contains("scorecardresearch") || url.contains("facebook")
-                                              || (url.endsWith(".jpg") && !url.contains("poster"))
+//                                              || (url.endsWith(".jpg") && !url.contains("poster"))
                                               || url.contains("google-analytics")
                                               || url.contains("newsuncdn")) {
                                           return blankResponse();
@@ -65,9 +67,15 @@ public class XWebView extends WebView {
                                   }
 
                                   @Override
+                                  public void onPageStarted(WebView view, String url, Bitmap favicon) {
+                                      super.onPageStarted(view, url, favicon);
+                                      findMainActivity().setPageTitle("Loading...");
+                                  }
+
+                                  @Override
                                   public void onPageFinished(WebView view, String url) {
                                       findMainActivity().setPageTitle(view.getTitle());
-                                      String js = "https://play.evolus.vn/castr/services/_generic.js";
+                                      String js = "https://play.evolus.vn/castr/services/_generic.js?t=" + (new Date().getTime());
                                       view.evaluateJavascript("(function() {" +
                                               "var parent = document.getElementsByTagName('head').item(0);" +
                                               "var script = document.createElement('script');" +
