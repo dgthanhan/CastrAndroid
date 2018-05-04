@@ -2,32 +2,39 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
-        android:layout_height="wrap_content"
         android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorPrimary"
         android:minHeight="?attr/actionBarSize"
         app:elevation="8dp"
-        android:background="?attr/colorPrimary"
-        app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+        app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
 
-    <vn.evolus.castr.XWebView
-        android:id="@+id/webView"
+    <android.support.v4.widget.SwipeRefreshLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/toolbar"
-        android:layout_above="@+id/cast_mini_controller_main"/>
+        android:id="@+id/swipeRefreshLayout"
+        android:layout_above="@+id/cast_mini_controller_main"
+        android:layout_below="@+id/toolbar">
+
+        <vn.evolus.castr.XWebView
+            android:id="@+id/webView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </android.support.v4.widget.SwipeRefreshLayout>
+
 
     <fragment
         android:id="@+id/cast_mini_controller_main"
+        class="com.google.android.gms.cast.framework.media.widget.MiniControllerFragment"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:visibility="gone"
-        app:castShowImageThumbnail="true"
-        class="com.google.android.gms.cast.framework.media.widget.MiniControllerFragment" />
+        app:castShowImageThumbnail="true" />
 
 </RelativeLayout>

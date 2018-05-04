@@ -198,7 +198,7 @@ public class LocalPlayerActivity extends AppCompatActivity {
                 if (mCastSession != null && mCastSession.isConnected()) {
                     updatePlaybackLocation(PlaybackLocation.REMOTE);
                     if (remotePlayback) {
-                        loadRemoteMedia(this, mCastSession, mSelectedMedia, 0, true);
+                        loadRemoteMedia(this, mCastSession, mSelectedMedia, 0, true, null);
                         finish();
                         return;
                     }
@@ -264,7 +264,7 @@ public class LocalPlayerActivity extends AppCompatActivity {
 
                     if (mPlaybackState == PlaybackState.PLAYING) {
                         mVideoView.getPlayer().setPlayWhenReady(false);
-                        loadRemoteMedia(LocalPlayerActivity.this, mCastSession, mSelectedMedia, mSeekbar.getProgress(), true);
+                        loadRemoteMedia(LocalPlayerActivity.this, mCastSession, mSelectedMedia, mSeekbar.getProgress(), true, null);
                         return;
                     } else {
                         mPlaybackState = PlaybackState.IDLE;
@@ -334,7 +334,7 @@ public class LocalPlayerActivity extends AppCompatActivity {
                         updatePlaybackLocation(PlaybackLocation.LOCAL);
                         break;
                     case REMOTE:
-                        loadRemoteMedia(this,mCastSession, mSelectedMedia, 0, true);
+                        loadRemoteMedia(this,mCastSession, mSelectedMedia, 0, true, null);
                         finish();
                         break;
                     default:
@@ -375,7 +375,7 @@ public class LocalPlayerActivity extends AppCompatActivity {
         updatePlayButton(mPlaybackState);
     }
 
-    public static void loadRemoteMedia(final Activity activity, CastSession castSession, MediaInfo mSelectedMedia, int position, boolean autoPlay) {
+    public static void loadRemoteMedia(final Activity activity, CastSession castSession, MediaInfo mSelectedMedia, int position, boolean autoPlay, final Runnable doWhenStart) {
         if (castSession == null) {
             return;
         }
@@ -389,7 +389,9 @@ public class LocalPlayerActivity extends AppCompatActivity {
                 Intent intent = new Intent(activity, ExpandedControlsActivity.class);
                 activity.startActivity(intent);
                 remoteMediaClient.unregisterCallback(this);
+                if (doWhenStart != null) doWhenStart.run();
             }
+
 
             @Override
             public void onMetadataUpdated() {

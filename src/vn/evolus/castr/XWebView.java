@@ -24,7 +24,7 @@ import java.util.Date;
  */
 
 public class XWebView extends WebView {
-
+    private boolean clearHistory = false;
     public XWebView(Context context) {
         super(context);
         this.init();
@@ -59,7 +59,9 @@ public class XWebView extends WebView {
                                               || url.contains("scorecardresearch") || url.contains("facebook")
 //                                              || (url.endsWith(".jpg") && !url.contains("poster"))
                                               || url.contains("google-analytics")
+                                              || url.contains("ads")
                                               || url.contains("newsuncdn")) {
+                                          System.out.println("Rejected: " + url);
                                           return blankResponse();
                                       }
 
@@ -69,12 +71,21 @@ public class XWebView extends WebView {
                                   @Override
                                   public void onPageStarted(WebView view, String url, Bitmap favicon) {
                                       super.onPageStarted(view, url, favicon);
-                                      findMainActivity().setPageTitle("Loading...");
+                                      MainActivity activity = findMainActivity();
+                                      activity.setPageTitle("Loading...");
+                                      activity.supportInvalidateOptionsMenu();
                                   }
 
                                   @Override
                                   public void onPageFinished(WebView view, String url) {
-                                      findMainActivity().setPageTitle(view.getTitle());
+                                      MainActivity mainActivity = findMainActivity();
+                                      mainActivity.setPageTitle(view.getTitle());
+                                      mainActivity.supportInvalidateOptionsMenu();
+                                      mainActivity.refreshDone();
+                                      if (clearHistory) {
+                                          view.clearHistory();
+                                          clearHistory = false;
+                                      }
                                       String js = "https://play.evolus.vn/castr/services/_generic.js?t=" + (new Date().getTime());
                                       view.evaluateJavascript("(function() {" +
                                               "var parent = document.getElementsByTagName('head').item(0);" +
@@ -123,6 +134,10 @@ public class XWebView extends WebView {
             }
         });
         this.clearCache(true);
+    }
+
+    public void clearHistoryRequested() {
+        clearHistory = true;
     }
 
     public class JSBridge {
