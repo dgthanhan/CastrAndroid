@@ -59,7 +59,7 @@ public class XWebView extends WebView {
                                               || url.contains("scorecardresearch") || url.contains("facebook")
 //                                              || (url.endsWith(".jpg") && !url.contains("poster"))
                                               || url.contains("google-analytics")
-                                              || url.contains("ads")
+                                              || (url.contains("ads") && !url.contains("uploads"))
                                               || url.contains("newsuncdn")) {
                                           System.out.println("Rejected: " + url);
                                           return blankResponse();

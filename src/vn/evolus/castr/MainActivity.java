@@ -56,6 +56,7 @@ public class MainActivity extends VideoBrowserActivity {
         @Override
         public void run() {
             webView.clearHistoryRequested();
+            supportInvalidateOptionsMenu();
             webView.loadUrl(APP_URL);
             System.out.println("Go home called");
         }
